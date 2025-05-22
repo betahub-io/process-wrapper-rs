@@ -4,6 +4,9 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use thiserror::Error;
 
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
+
 #[derive(Error, Debug)]
 pub enum ProcessError {
     #[error("IO error: {0}")]
@@ -61,11 +64,20 @@ impl Process {
         
         // Create the command
         let mut command = Command::new(program);
+        
+        // Configure the command
         command
             .args(args)
             .stdin(Stdio::piped())
             .stdout(Stdio::null()) // We don't care about stdout by default
             .stderr(Stdio::piped());
+        
+        // On Windows, hide the console window
+        #[cfg(windows)]
+        {
+            const CREATE_NO_WINDOW: u32 = 0x08000000;
+            command.creation_flags(CREATE_NO_WINDOW);
+        }
         
         // Spawn the process
         let mut child = command.spawn()?;
