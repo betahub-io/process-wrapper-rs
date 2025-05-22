@@ -1,0 +1,17 @@
+---
+description: Process API
+globs: 
+alwaysApply: false
+---
+# Process API
+
+The core functionality is implemented in the `Process` struct in [process.rs](mdc:src/process.rs).
+
+Key methods:
+- `new(cmd: &str)` - Creates a process from a command string (legacy)
+- `new_with_args(program: &str, args: &[&str])` - Creates a process with separate program and arguments
+- `write_stdin(&mut self, data: &[u8])` - Writes data to process stdin
+- `read_stderr(&mut self, buf: &mut [u8])` - Reads data from process stderr
+- `is_running(&mut self)` - Checks if process is still running
+- `wait(&mut self)` - Waits for process to exit and returns exit code
+- `close(&mut self)` - Closes stdin, terminates process, and cleans up resources

@@ -1,0 +1,17 @@
+---
+description: FFI Interface - the C ABI interface functions
+globs: 
+alwaysApply: false
+---
+# FFI Interface
+
+The C ABI functions are defined in [ffi.rs](mdc:src/ffi.rs) and provide a safe interface for external languages.
+
+Main functions:
+- `process_start(cmd: *const c_char)` - Starts a process with command string
+- `process_start_with_args(program: *const c_char, args: *const *const c_char, args_len: size_t)` - Starts a process with separate program and arguments
+- `process_write_stdin(proc: *mut Process, data: *const u8, len: size_t)` - Writes data to process stdin
+- `process_read_stderr(proc: *mut Process, buf: *mut u8, len: size_t)` - Reads data from process stderr
+- `process_is_running(proc: *mut Process)` - Checks if process is running
+- `process_wait(proc: *mut Process)` - Waits for process to exit
+- `process_close(proc: *mut Process)` - Cleans up resources

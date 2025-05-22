@@ -1,0 +1,19 @@
+[package]
+name = "betahub_process_wrapper"
+version = "0.1.0"
+edition = "2021"
+description = "Rust FFI library for process control and management"
+license = "MIT"
+
+[lib]
+name = "betahub_process_wrapper"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+libc = "0.2"
+thiserror = "1.0"
+log = "0.4"
+
+[dev-dependencies]
+tempfile = "3.3"
+rstest = "0.16"

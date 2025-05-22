@@ -1,0 +1,21 @@
+---
+description: C# Integration
+globs: 
+alwaysApply: false
+---
+# C# Integration
+
+The library can be used from C# with P/Invoke. Examples are in [README.md](mdc:README.md).
+
+Integration patterns:
+1. Import functions with `DllImport`
+2. Use the library to start and manage processes
+3. Handle data streaming with stdin/stderr
+4. Always close processes when done to prevent leaks
+
+Example usage:
+```csharp
+[DllImport("betahub_process_wrapper", CallingConvention = CallingConvention.Cdecl)]
+private static extern IntPtr process_start_with_args(string program, string[] args, UIntPtr args_len);
+```
+```

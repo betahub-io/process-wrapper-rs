@@ -1,0 +1,15 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Project Structure
+
+This library provides a Rust FFI interface for process control with a C ABI that can be used from C# (Unity) and other languages.
+
+Key files:
+- [lib.rs](mdc:src/lib.rs) - Library entry point
+- [process.rs](mdc:src/process.rs) - Core Process management implementation
+- [ffi.rs](mdc:src/ffi.rs) - FFI interface with C ABI functions
+- [tests/](mdc:tests) - Test files to verify functionality
+- [README.md](mdc:README.md) - Documentation and usage examples
