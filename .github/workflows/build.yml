@@ -88,7 +88,6 @@ jobs:
         run: |
           mkdir -p dist/windows
           cp target/x86_64-pc-windows-msvc/release/betahub_process_wrapper.dll dist/windows/
-          cp target/x86_64-pc-windows-msvc/release/betahub_process_wrapper.lib dist/windows/
       
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
@@ -102,7 +101,7 @@ jobs:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: dist
       
