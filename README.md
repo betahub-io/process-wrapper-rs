@@ -21,6 +21,90 @@ cargo build --release
 cargo test
 ```
 
+### Build Script
+
+This repository includes a build script that automates the process of building for all supported platforms:
+
+```bash
+# Build for your current platform
+./build-all.sh
+
+# Build for a specific platform
+./build-all.sh --macos
+./build-all.sh --linux
+./build-all.sh --windows
+
+# Build for all platforms (requires cross-compilation setup)
+./build-all.sh --all
+```
+
+The script will create a `dist` directory with subdirectories for each platform containing the compiled libraries.
+
+## Cross-Compilation
+
+This library supports multiple target platforms. Follow these instructions to build for different targets:
+
+### Prerequisites
+
+First, install the Rust targets for cross-compilation:
+
+```bash
+# For macOS (Intel)
+rustup target add x86_64-apple-darwin
+
+# For macOS (Apple Silicon/ARM)
+rustup target add aarch64-apple-darwin
+
+# For Linux (64-bit Intel)
+rustup target add x86_64-unknown-linux-gnu
+
+# For Windows (64-bit Intel)
+rustup target add x86_64-pc-windows-msvc  # If using MSVC toolchain
+# OR
+rustup target add x86_64-pc-windows-gnu   # If using MinGW toolchain
+```
+
+### Building for specific targets
+
+```bash
+# Build for macOS (Intel)
+cargo build --release --target x86_64-apple-darwin
+
+# Build for macOS (Apple Silicon)
+cargo build --release --target aarch64-apple-darwin
+
+# Build for Linux (64-bit Intel)
+cargo build --release --target x86_64-unknown-linux-gnu
+
+# Build for Windows (64-bit Intel)
+cargo build --release --target x86_64-pc-windows-msvc
+# OR
+cargo build --release --target x86_64-pc-windows-gnu
+```
+
+### Creating Universal Binary for macOS
+
+To create a universal binary for macOS that works on both Intel and Apple Silicon:
+
+```bash
+# Build for both architectures
+cargo build --release --target x86_64-apple-darwin
+cargo build --release --target aarch64-apple-darwin
+
+# Create a universal binary using lipo
+lipo -create \
+  target/x86_64-apple-darwin/release/libbetahub_process_wrapper.dylib \
+  target/aarch64-apple-darwin/release/libbetahub_process_wrapper.dylib \
+  -output target/release/libbetahub_process_wrapper.dylib
+```
+
+### Additional Windows Build Notes
+
+When building for Windows, you need to ensure the correct toolchain is installed:
+
+- For MSVC target: Install Visual Studio or the Visual C++ Build Tools
+- For GNU target: Install MinGW-w64
+
 ## C ABI Interface
 
 The library exposes the following functions with C ABI:

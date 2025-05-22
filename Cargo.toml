@@ -17,3 +17,14 @@ log = "0.4"
 [dev-dependencies]
 tempfile = "3.3"
 rstest = "0.16"
+
+# Target-specific dependencies
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["processthreadsapi", "handleapi", "synchapi"] }
+
+# Build configuration
+[profile.release]
+lto = true        # Enable Link Time Optimization
+codegen-units = 1 # Reduce number of codegen units to increase optimizations
+panic = "abort"   # Abort on panic in release mode
+strip = true      # Strip symbols from binary

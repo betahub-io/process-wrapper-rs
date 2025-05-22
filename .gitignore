@@ -21,3 +21,11 @@ Cargo.lock
 
 # Mac-related
 .DS_Store
+
+# Build output
+/dist/
+*.so
+*.dylib
+*.dll
+*.lib
+*.a

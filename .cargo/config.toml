@@ -1,0 +1,35 @@
+[build]
+# Default target - comment this out if you want to use your host's default
+# target = "x86_64-apple-darwin"
+
+[target.x86_64-apple-darwin]
+# macOS Intel-specific settings
+rustflags = [
+  "-C", "link-arg=-undefined",
+  "-C", "link-arg=dynamic_lookup",
+]
+
+[target.aarch64-apple-darwin]
+# macOS ARM-specific settings
+rustflags = [
+  "-C", "link-arg=-undefined",
+  "-C", "link-arg=dynamic_lookup",
+]
+
+[target.x86_64-unknown-linux-gnu]
+# Linux-specific settings
+rustflags = [
+  "-C", "link-arg=-Wl,-soname,libbetahub_process_wrapper.so",
+]
+
+[target.x86_64-pc-windows-msvc]
+# Windows MSVC-specific settings
+rustflags = [
+  "-C", "target-feature=+crt-static",
+]
+
+[target.x86_64-pc-windows-gnu]
+# Windows GNU-specific settings
+rustflags = [
+  "-C", "target-feature=+crt-static",
+] 

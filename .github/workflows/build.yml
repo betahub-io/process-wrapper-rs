@@ -1,0 +1,123 @@
+name: Build Libraries
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          target: x86_64-apple-darwin
+          
+      - name: Add Apple Silicon target
+        run: rustup target add aarch64-apple-darwin
+      
+      - name: Build for Intel Mac
+        run: cargo build --release --target x86_64-apple-darwin
+      
+      - name: Build for Apple Silicon
+        run: cargo build --release --target aarch64-apple-darwin
+      
+      - name: Create Universal Binary
+        run: |
+          mkdir -p dist/macos
+          lipo -create \
+            target/x86_64-apple-darwin/release/libbetahub_process_wrapper.dylib \
+            target/aarch64-apple-darwin/release/libbetahub_process_wrapper.dylib \
+            -output dist/macos/libbetahub_process_wrapper.dylib
+      
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-libraries
+          path: dist/macos
+  
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          target: x86_64-unknown-linux-gnu
+      
+      - name: Build for Linux
+        run: cargo build --release --target x86_64-unknown-linux-gnu
+      
+      - name: Prepare artifacts
+        run: |
+          mkdir -p dist/linux
+          cp target/x86_64-unknown-linux-gnu/release/libbetahub_process_wrapper.so dist/linux/
+      
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-libraries
+          path: dist/linux
+  
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          target: x86_64-pc-windows-msvc
+      
+      - name: Build for Windows
+        run: cargo build --release --target x86_64-pc-windows-msvc
+      
+      - name: Prepare artifacts
+        run: |
+          mkdir -p dist/windows
+          cp target/x86_64-pc-windows-msvc/release/betahub_process_wrapper.dll dist/windows/
+          cp target/x86_64-pc-windows-msvc/release/betahub_process_wrapper.lib dist/windows/
+      
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-libraries
+          path: dist/windows
+  
+  create-release:
+    needs: [build-macos, build-linux, build-windows]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: dist
+      
+      - name: Create release package
+        run: |
+          cd dist
+          zip -r betahub_process_wrapper.zip *
+      
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/betahub_process_wrapper.zip
+          name: Release ${{ github.sha }}
+          tag_name: v0.1.0-${{ github.run_number }}
+          draft: true
+          prerelease: true
+          generate_release_notes: true 
